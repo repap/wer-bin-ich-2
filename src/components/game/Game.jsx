@@ -14,13 +14,13 @@ export const Game = ({ activePlayer }) => {
             </Fragment>)
           : (<Fragment>
             <Player name={name} alias="Alf" id="12345" />
-            Ist an der Reihe!
+            Muss jetzt seine Fragen stellen!
           </Fragment>)
         }
       </div>
       <div>
         {activePlayer
-          ? (<div>Stell deine Fragen!</div>)
+          ? (<div>Stell deine <b>JA</b>, <b>NEIN</b> Fragen jetzt!!!</div>)
           : (<Fragment>
               <div>
                 <button>Yap, <b>{name}</b> weiß wer er ist!!!</button>

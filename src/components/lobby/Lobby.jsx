@@ -8,7 +8,7 @@ export const Lobby = () => {
       <h2>Lobby</h2>
       <div>
         <PlayerList />
-        Kopiere und teile den Link mit deinen Freunden, damit sie mitspielen können!
+        Kopiere und teile den Link mit deinen Freunden, damit du mit ihnen spielen kannst!
         <CopyLink link="http://12345.test.test" />
         <button>So, kann jetzt losgehen!</button>
       </div>
