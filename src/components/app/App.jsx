@@ -6,6 +6,7 @@ import { CreateOwnPlayer } from '../createOwnPlayer/CreateOwnPlayer';
 import { Lobby } from '../lobby/Lobby';
 import { Game } from '../game/Game';
 import { Result } from '../result/Result';
+import { CreateAlias } from '../createAlias/CreateAlias';
 
 const App = () => {
   return (
