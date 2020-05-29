@@ -1,14 +1,11 @@
 import React, { Fragment } from 'react'
-import { AppState, STATES, ACTION_TYPES } from '../app/App';
-
-const createGameAction = () => ({
-  type: ACTION_TYPES.CHANGE_GAME_STATE,
-  gameState: STATES.PLAYER_CREATION,
-})
+import { AppState } from '../app/App';
+import { STATES } from '../../const/game';
+import { createGameAction } from '../../actions/game';
 
 export const Login = () => {
   const { dispatch } = React.useContext(AppState);
-  const createGame = () => dispatch(createGameAction())
+  const createGame = () => dispatch(createGameAction(STATES.PLAYER_CREATION))
   return (
     <Fragment>
       <button onClick={createGame}>Ich erstell mal n Spiel</button>
