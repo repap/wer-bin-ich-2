@@ -1,7 +1,12 @@
 import React, { Fragment } from 'react'
 import { Player } from '../../presentations/player/Player'
+import { AppState } from '../app/App';
+import { gameStateChangeAction } from '../../actions/game';
+import { STATES } from '../../const/game';
 
 export const Game = ({ activePlayer }) => {
+  const { dispatch } = React.useContext(AppState);
+  const endGame = () => dispatch(gameStateChangeAction(STATES.GAME_END))
   const name = 'Dennis'
   return (
     <div>
@@ -23,7 +28,7 @@ export const Game = ({ activePlayer }) => {
           ? (<div>Stell deine <b>JA</b>, <b>NEIN</b> Fragen jetzt!!!</div>)
           : (<Fragment>
               <div>
-                <button>Yap, <b>{name}</b> weiß wer er ist!!!</button>
+              <button onClick={endGame}>Yap, <b>{name}</b> weiß wer er ist!!!</button>
               </div>
               <div>
                 <button>Jo, das stimmt! <b>JA!</b></button>
