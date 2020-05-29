@@ -19,8 +19,29 @@ const VIEW_STATE_MAP = {
   [STATES.GAME_END]: Result,
 }
 
+// Alle Datenkommen vom Socket. Nur gameState ist ein hybrid
+// Oder soll ich einen guiState implementieren?
+// Könnte Sinn machen. Hybride sind selten gut.
 const initialState = {
   gameState: STATES.GAME_CREATION,
+  guiState: '',
+  isHost: false,
+  name: 'Dennis', // ist zwar redundant, aber auch einfacher zu nutzen
+  playerId: 'p-0123456789',
+  gameId: 'g-0123456789', // brauch ich die? Ja, da das der Socket Channel ist
+  players: [
+    {
+      name: 'Dennis',
+      playerId: 'p-0123456789',
+      rank: '1', // nur relevant wenn spiel vorbei
+    },
+    {
+      name: 'Mareike',
+      playerId: 'p-1234567890',
+      alias: 'Einstein',
+      rank: '0', // nur relevant wenn spiel vorbei
+    }
+  ]
 }
 
 const reducer = (state, action) => {
