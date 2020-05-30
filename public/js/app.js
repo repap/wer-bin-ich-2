@@ -17,7 +17,8 @@ socket.on('disconnect', () => {
   }
 })
 
-socket.on('gameData', data => {
+socket.on('updateGame', data => {
+  console.log(data)
   const { players, id, gameId } = data
   updatePlayerList(players)
   updateSetName(players.find(p => p.id === id), gameId)
@@ -31,7 +32,7 @@ const updatePlayerList = players => {
     const playerElement = document.createElement('div')
     playerElement.innerHTML = `
       <div>
-        ${p.name || p.id}
+        ${p.name || 'unbekannter Spieler'}
       </div>
     `
     playerlist.append(playerElement)

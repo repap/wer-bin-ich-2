@@ -2,84 +2,70 @@ const { join } = require('path')
 const { createServer } = require('http')
 const socketio = require('socket.io')
 const express = require('express');
-const gameManager = require('./app/gameManager')
-const playerManager = require('./app/playerManager')
+const players = require('./app/players')
+const games = require('./app/games')
 
 const app = express();
 const server = createServer(app)
 const io = socketio(server)
 
-const sendGameData = game => {
-  const players = game.getPlayers().map(p => ({
-    id: playerManager.getPlayer(p).getId(),
-    alias: playerManager.getPlayer(p).getAlias(),
-    name: playerManager.getPlayer(p).getName(),
-    socket: playerManager.getPlayer(p).getSocket()
-  }))
+const createPlayerData = (player, currentId) => {
+  const playerData = {
+    id: player.id,
+    name: player.name,
+    gameId: player.gameId,
+  }
 
-  players.forEach(p => {
-    p.socket.emit('gameData', {
-      id: p.id,
-      gameId: game.getId(),
-      players: players.map(e => ({
-        id: e.id,
-        alias: p.id === e.id ? null : e.alias,
-        name: e.name,
-      }))
-    })
-  })
+  if (player.id === currentId) {
+    return playerData;
+  }
+
+  return {
+    ...playerData,
+    alias: player.alias,
+  }
 }
 
-io.on('connection', client => {
-  console.log('connected')
+const createGameData = (players, currentId) => {
+  const currentPlayer = players.find(p => p.id === currentId)
+  const playerData = createPlayerData(currentPlayer, currentId)
+  return {
+    ...playerData,
+    players: players.map(p => createPlayerData(p, currentId))
+  }
+}
 
-  client.on('joinGame', data => {
-    console.log(data)
-    const { gameId } = data
-    const game = gameManager.getGame(gameId)
+const getPlayersInGame = (players, gameId) => players
+  .filter(p => p.gameId == gameId)
 
-    if (!game) {
-      return client.disconnect(true)
-    }
-    const playerId = playerManager.createPlayer(gameId, client)
-    game.addPlayer(playerId)
-    
-    sendGameData(game)
+const sendUpdateToPlayers = (players, gameId) => {
+  getPlayersInGame(players, gameId).forEach(player => {
+    const gameData = createGameData(players, player.id)
+    io.to(player.id).emit('updateGame', gameData)
+  });
+}
+
+io.on('connection', socket => {
+  socket.on('joinGame', ({ gameId }) => {
+    players.addPlayer(socket, gameId)
+    sendUpdateToPlayers(players.getPlayers(), gameId)
   })
 
-  client.on('setName', data => {
-    console.log(data)
-    const { gameId, id, name } = data
-    const game = gameManager.getGame(gameId)
-    
-    if (!game) {
-      return client.disconnect(true)
-    }
-    playerManager.getPlayer(id).setName(name)
-    
-    sendGameData(game)
+  socket.on('setName', ({ gameId, id, name }) => {
+    const player = players.getPlayers().find(p => p.id === id)
+    player.name = name
+    sendUpdateToPlayers(players.getPlayers(), gameId)
   })
 
-  client.on('setAlias', data => {
-    console.log(data)
-    const { gameId, playerId, alias } = data
-    const game = gameManager.getGame(gameId)
-
-    if (!game) {
-      return client.disconnect(true)
-    }
-    playerManager.getPlayer(playerId).setAlias(alias)
-    
-    sendGameData(game)
+  socket.on('setAlias', ({ gameId, id, alias }) => {
+    const player = players.getPlayers().find(p => p.id === id)
+    player.alias = alias
+    sendUpdateToPlayers(players.getPlayers(), gameId)
   })
 
-  client.on('restart', data => {
+  socket.on('restart', data => console.log(data))
 
-  })
-
-  client.on('disconnect', () => {
-
-  })
+  socket.on('disconnect', () => console.log('disconnected'))
 })
 
 const PORT = 3333 || process.env.PORT;
@@ -88,14 +74,14 @@ app.use(express.static(join(__dirname, 'public')));
 
 app.get('/creategame', (req, res) => {
   // create a new game
-  const gameId = gameManager.createGame()
+  const gameId = games.createGame()
   // redirect to game with id
   res.redirect(`/game/${gameId}`)
 })
 
 app.get('/game/:id?', (req, res) => {
   const { id } = req.params;
-  if (gameManager.getGames().find(g => g.getId() === id)) {
+  if (games.getGames().find(g => g === id)) {
     return res.sendFile(join(__dirname, 'public', 'game.html'))
   }
   res.redirect('/')
