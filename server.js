@@ -41,6 +41,7 @@ const getPlayersInGame = (players, gameId) => players
 const sendUpdateToPlayers = (players, gameId) => {
   getPlayersInGame(players, gameId).forEach(player => {
     const gameData = createGameData(players, player.id)
+    console.log('sendUpdateToPlayers')
     io.to(player.id).emit('updateGame', gameData)
   });
 }
@@ -49,6 +50,7 @@ io.on('connection', socket => {
   socket.on('joinGame', ({ gameId }) => {
     players.addPlayer(socket, gameId)
     sendUpdateToPlayers(players.getPlayers(), gameId)
+    socket.emit('createName', {id: socket.id, gameId})
   })
 
   socket.on('setName', ({ gameId, id, name }) => {
@@ -65,7 +67,15 @@ io.on('connection', socket => {
 
   socket.on('restart', data => console.log(data))
 
-  socket.on('disconnect', () => console.log('disconnected'))
+  socket.on('disconnect', () => {
+    const player = players.getPlayers().find(p => p.id === socket.id)
+    console.log(player.gameId)
+    
+    const gameId = player.gameId
+    players.removePlayer(player.id)
+    console.log(players.getPlayers().map(p => p.name))
+    sendUpdateToPlayers(players.getPlayers(), gameId)
+  })
 })
 
 const PORT = 3333 || process.env.PORT;

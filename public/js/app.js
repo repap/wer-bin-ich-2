@@ -5,23 +5,27 @@ console.log(gameId)
 
 socket.on('connect', () => {
   if (socket.connected) {
-    console.log('connect')
     socket.emit('joinGame', { gameId })
   }
 })
 
 socket.on('disconnect', () => {
   if (socket.disconnected) {
-    console.log('disconnected')
     window.location.reload()
   }
 })
 
-socket.on('updateGame', data => {
-  console.log(data)
-  const { players, id, gameId } = data
+socket.on('updateGame', ({ players, id, gameId }) => {
+  console.log('updateGame')
   updatePlayerList(players)
-  updateSetName(players.find(p => p.id === id), gameId)
+})
+
+socket.on('createName', ({ id, gameId }) => {
+  setName(id, gameId)
+})
+
+socket.on('createAlias', ({ players, id, gameId }) => {
+  updateSetAlias(players.find(p => p.id === id), gameId)
 })
 
 const updatePlayerList = players => {
@@ -32,6 +36,7 @@ const updatePlayerList = players => {
     const playerElement = document.createElement('div')
     playerElement.innerHTML = `
       <div>
+        <img src="https://api.adorable.io/avatars/40/${p.id}@adorable.png">
         ${p.name || 'unbekannter Spieler'}
       </div>
     `
@@ -39,22 +44,42 @@ const updatePlayerList = players => {
   });
 }
 
-const updateSetName = (player, gameId) => {
-  if (player.name) {
-    const setNameElement = document.getElementById('setName')
-    return setNameElement.innerHTML = ''
-  }
+const createModal = content => {
+  const modal = document.createElement('div')
+  modal.classList.add('modal')
+  modal.innerHTML = `
+    <button id="modal-close">schließen</button>
+  `
 
-  document.querySelector('#setName button').addEventListener(
+  modal.append(content(modal.remove))
+  document.body.prepend(modal)
+  
+  document.getElementById('modal-close').addEventListener(
     'click',
     e => {
       e.preventDefault()
-      socket.emit('setName', {
-        name: document.getElementById('setNameInput').value,
-        id: player.id,
-        gameId,
-      })
-      return false
+      modal.remove()
     }
+  )
+}
+
+const sendSetName = (id, gameId, modal) => e => {
+  e.preventDefault()
+  socket.emit('setName', {
+    name: document.getElementById('setNameInput').value,
+    id,
+    gameId,
+  })
+  modal.classList.add('hidden')
+}
+
+const updateSetAlias = () => null
+
+const setName = (id, gameId) => {
+  const modal = document.getElementById('setNameModal')
+  modal.classList.remove('hidden')
+  document.querySelector('#setNameModal button.send').addEventListener(
+    'click',
+    sendSetName(id, gameId, modal)
   )
 }

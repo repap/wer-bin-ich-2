@@ -14,5 +14,10 @@ module.exports = {
     players.push(player)
     return player.id
   },
-  getPlayers: () => players
+  getPlayers: () => players,
+  removePlayer: id => {
+    const player = players.find(p => p.id === id)
+    console.log(players.indexOf(player))
+    players.splice(players.indexOf(player), 1)
+  }
 }

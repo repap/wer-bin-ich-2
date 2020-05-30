@@ -1,0 +1,26 @@
+.hidden {
+  display: none;
+}
+
+.modal {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  background: rgba(0,0,0,.5);
+}
+
+.modal > .content {
+  background: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,.3);
+  min-width: 350px;
+  max-width: 450px;
+  min-height: 250px;
+  max-height: 450px;
+  margin: 50px auto 20px;
+}
+
+#playerlist img {
+  border-radius: 25%;
+}
