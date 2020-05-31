@@ -9,7 +9,7 @@ const GAME_STATES = {
 const createPlayer = (socket, gameId) => ({
   id: socket.id,
   name: null,
-  alias: 'test',
+  alias: null,
   gameId,
   gameState: GAME_STATES.PREPERATION,
 })

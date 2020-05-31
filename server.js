@@ -15,15 +15,12 @@ const createPlayerData = ({ alias, ...playerData }, currentId) => (
     : { ...playerData, alias }
 )
 
-const createGameData = (players, currentId) => {
-  const currentPlayer = players.find(p => p.id === currentId)
-  const playerData = createPlayerData(currentPlayer, currentId)
-  return {
-    ...playerData,
-    gameState: currentPlayer.gameState,
-    players: players.map(p => createPlayerData(p, currentId))
-  }
-}
+const getCurrentPlayer = (players, id) => players.find(p => p.id === id)
+
+const createGameData = (players, currentId) => ({
+  ...createPlayerData(getCurrentPlayer(players, currentId), currentId),
+  players: players.map(p => createPlayerData(p, currentId))
+})
 
 const getPlayersInGame = (players, gameId) => players
   .filter(p => p.gameId == gameId)
@@ -52,13 +49,13 @@ io.on('connection', socket => {
   })
 
   socket.on('setName', ({ gameId, id, name }) => {
-    const player = players.getPlayers().find(p => p.id === id)
+    const player = getCurrentPlayer(players.getPlayers(), id)
     player.name = name
     sendUpdateToPlayers(players.getPlayers(), gameId)
   })
 
   socket.on('setAlias', ({ gameId, id, alias }) => {
-    const player = players.getPlayers().find(p => p.id === id)
+    const player = getCurrentPlayer(players.getPlayers(), id)
     player.alias = alias
     sendUpdateToPlayers(players.getPlayers(), gameId)
   })
@@ -79,7 +76,7 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', () => {
-    const player = players.getPlayers().find(p => p.id === socket.id)    
+    const player = getCurrentPlayer(players.getPlayers(), socket.id)
     const gameId = player.gameId
     players.removePlayer(player.id)
     sendUpdateToPlayers(players.getPlayers(), gameId)
