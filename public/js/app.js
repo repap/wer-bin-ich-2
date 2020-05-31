@@ -16,17 +16,25 @@ socket.on('disconnect', () => {
 })
 
 socket.on('updateGame', ({ players, id, gameId }) => {
-  console.log('updateGame')
+  console.log('updateGame', players)
   updatePlayerList(players)
 })
 
-socket.on('createName', ({ id, gameId }) => {
+socket.on('createName', ({ id, gameId, gameState }) => {
   setName(id, gameId)
+  if (gameState === 'preperation') {
+    setReady(id, gameId)
+  }
 })
 
-socket.on('createAlias', ({ players, id, gameId }) => {
-  updateSetAlias(players.find(p => p.id === id), gameId)
+socket.on('createAlias', ({ id, gameId, requestAlias }) => {
+  console.log('createAlias', requestAlias)
+  setAlias(id, gameId, requestAlias)
+  removeSetReady()
 })
+
+const removeSetReady = () => document.getElementById('readyToPlay')
+  .classList.add('hidden')
 
 const updatePlayerList = players => {
   const playerlist = document.getElementById('playerlist')
@@ -78,7 +86,26 @@ const sendSetName = (id, gameId, modal) => e => {
   modal.classList.add('hidden')
 }
 
-const updateSetAlias = () => null
+const sendSetAlias = (id, gameId, aliasId, modal) => e => {
+  e.preventDefault()
+  socket.emit('setAlias', {
+    alias: document.getElementById('setAliasInput').value,
+    id,
+    aliasId,
+    gameId,
+  })
+  modal.classList.add('hidden')
+}
+
+const setAlias = (id, gameId, aliasId) => {
+  console.log('setAlias')
+  const modal = document.getElementById('setAliasModal')
+  modal.classList.remove('hidden')
+  document.querySelector('#setAliasModal button.send').addEventListener(
+    'click',
+    sendSetAlias(id, gameId, aliasId, modal)
+  )
+}
 
 const setName = (id, gameId) => {
   const modal = document.getElementById('setNameModal')
@@ -87,4 +114,20 @@ const setName = (id, gameId) => {
     'click',
     sendSetName(id, gameId, modal)
   )
+}
+
+const setReady = (id, gameId) => {
+  const readyToPlayElement = document.getElementById('readyToPlay')
+  readyToPlayElement.classList.remove('hidden')
+  readyToPlayElement.addEventListener(
+    'click',
+    e => {
+      const checkbox = document.querySelector('#readyToPlay input')
+      checkbox.checked = !checkbox.checked
+      socket.emit('setReady', {
+        isReady: checkbox.checked,
+        id,
+        gameId,
+      })
+    })
 }
