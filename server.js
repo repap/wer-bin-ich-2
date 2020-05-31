@@ -10,7 +10,7 @@ const app = express();
 const server = createServer(app)
 const io = socketio(server)
 
-const PORT = 3333 || process.env.PORT;
+const PORT = process.env.PORT || 4000;
 
 const createPlayerData = ({ alias, ...playerData }, currentId) => (
   playerData.id === currentId 
