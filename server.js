@@ -9,28 +9,18 @@ const app = express();
 const server = createServer(app)
 const io = socketio(server)
 
-const createPlayerData = (player, currentId) => {
-  const playerData = {
-    id: player.id,
-    name: player.name,
-    gameId: player.gameId,
-  }
-
-  if (player.id === currentId) {
-    return playerData;
-  }
-
-  return {
-    ...playerData,
-    alias: player.alias,
-  }
-}
+const createPlayerData = ({ alias, ...playerData }, currentId) => (
+  playerData.id === currentId 
+    ? playerData
+    : { ...playerData, alias }
+)
 
 const createGameData = (players, currentId) => {
   const currentPlayer = players.find(p => p.id === currentId)
   const playerData = createPlayerData(currentPlayer, currentId)
   return {
     ...playerData,
+    gameState: currentPlayer.gameState,
     players: players.map(p => createPlayerData(p, currentId))
   }
 }
@@ -40,17 +30,25 @@ const getPlayersInGame = (players, gameId) => players
 
 const sendUpdateToPlayers = (players, gameId) => {
   getPlayersInGame(players, gameId).forEach(player => {
-    const gameData = createGameData(players, player.id)
-    console.log('sendUpdateToPlayers')
+    const gameData = createGameData(
+      getPlayersInGame(players, gameId),
+      player.id,
+    )
     io.to(player.id).emit('updateGame', gameData)
   });
 }
 
 io.on('connection', socket => {
   socket.on('joinGame', ({ gameId }) => {
-    players.addPlayer(socket, gameId)
-    sendUpdateToPlayers(players.getPlayers(), gameId)
-    socket.emit('createName', {id: socket.id, gameId})
+    const player = players.addPlayer(socket, gameId)
+    const gameData = createGameData(
+      getPlayersInGame(players.getPlayers(), gameId), 
+      player.id,
+    )
+    // send data to this socket only
+    // sendUpdateToPlayers(players.getPlayers(), gameId)
+    socket.emit('updateGame', gameData)
+    socket.emit('createName', {id: player.id, gameId})
   })
 
   socket.on('setName', ({ gameId, id, name }) => {
@@ -65,15 +63,25 @@ io.on('connection', socket => {
     sendUpdateToPlayers(players.getPlayers(), gameId)
   })
 
-  socket.on('restart', data => console.log(data))
+  socket.on('setReady', data => {
+    // set player ready
+    // check if all players are ready
+      // send gameState -> awaitRunning
+      // create Timeout 5 second
+        // send createAlias event
+        // send gameState -> running
+  })
+
+  socket.on('restart', data => {
+    // set player to restart
+    // check if all players are ready
+      // send gameState -> preperation
+  })
 
   socket.on('disconnect', () => {
-    const player = players.getPlayers().find(p => p.id === socket.id)
-    console.log(player.gameId)
-    
+    const player = players.getPlayers().find(p => p.id === socket.id)    
     const gameId = player.gameId
     players.removePlayer(player.id)
-    console.log(players.getPlayers().map(p => p.name))
     sendUpdateToPlayers(players.getPlayers(), gameId)
   })
 })

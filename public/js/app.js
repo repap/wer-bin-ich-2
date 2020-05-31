@@ -36,8 +36,13 @@ const updatePlayerList = players => {
     const playerElement = document.createElement('div')
     playerElement.innerHTML = `
       <div>
-        <img src="https://api.adorable.io/avatars/40/${p.id}@adorable.png">
-        ${p.name || 'unbekannter Spieler'}
+        <div>
+          <img src="https://api.adorable.io/avatars/40/${p.id}@adorable.png">
+        </div>
+        <div>
+          ${p.name || 'unbekannter Spieler'} <br />
+          ${p.alias ? 'aka ' + p.alias : ''}
+        </div>
       </div>
     `
     playerlist.append(playerElement)
