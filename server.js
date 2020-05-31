@@ -57,8 +57,6 @@ const setRequestAlias = (players, player) => {
   }
 }
 
-
-
 const areAllPlayersReady = players => !players.find(p => !p.isReady)
 const areAllPlayersRequestedRestart = players => !players
 .filter(p => p.isReady)

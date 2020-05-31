@@ -1,3 +1,7 @@
+body {
+  text-align: center;
+}
+
 .hidden {
   display: none;
 }
@@ -21,6 +25,18 @@
   margin: 50px auto 20px;
 }
 
-#playerlist img {
-  border-radius: 25%;
+.playerlist {
+  margin: 0 auto;
+  width: 15rem
+}
+
+.playerlist > div {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  text-align: left;
+}
+.playerlist img {
+  border-radius: 30%;
+  padding: 0 1rem;
 }

@@ -5,9 +5,7 @@ const state = {
 }
 
 const socket = io()
-
 const gameId = window.location.href.split('/').pop()
-console.log(gameId)
 
 socket.on('connect', () => {
   if (socket.connected) {
@@ -24,12 +22,19 @@ socket.on('disconnect', () => {
 socket.on('updateGame', ({ id, gameId, players, gameState }) => {
   state.id = id
   state.gameId = gameId
-  console.log('updateGame', players)
-  updatePlayerList(players)
-  if (gameState !== 'running') {
-    resetElementByid('setRestartGame')
+  hideElementById('spectatorlist')
+  if (gameState === 'running') {
+    const spectators = players.filter(p => !p.isReady)
+    updateList(players.filter(p => p.isReady), 'playerlist', 'Mitspieler')
+    
+    if (spectators.length) {
+      showElementById('spectatorlist')
+      updateList(spectators, 'spectatorlist', 'Zuschauer')
+    }
   }
   if (gameState === 'preperation') {
+    updateList(players, 'playerlist', 'Mitspieler')
+    resetElementByid('setRestartGame')
     setReady(id, gameId)
   }
 })
@@ -56,24 +61,22 @@ const hideElementById = id => document.getElementById(id)
 const showElementById = id => document.getElementById(id)
   .classList.remove('hidden')
 
-const updatePlayerList = players => {
-  const playerlist = document.getElementById('playerlist')
-  playerlist.innerHTML = '<h2>Mitspieler</h2>'
+const updateList = (players, id, header) => {
+  const list = document.getElementById(id)
+  list.innerHTML = `<h2>${header}</h2>`
 
   players.forEach(p => {
     const playerElement = document.createElement('div')
     playerElement.innerHTML = `
       <div>
-        <div>
-          <img src="https://api.adorable.io/avatars/40/${p.id}@adorable.png">
-        </div>
-        <div>
-          ${p.name || 'unbekannter Spieler'} <br />
-          ${p.alias ? 'aka ' + p.alias : ''}
-        </div>
+        <img src="https://api.adorable.io/avatars/40/${p.id}@adorable.png">
+      </div>
+      <div>
+        ${p.name || 'unbekannter Spieler'} <br />
+        ${p.alias ? 'aka ' + p.alias : ''}
       </div>
     `
-    playerlist.append(playerElement)
+    list.append(playerElement)
   });
 }
 
