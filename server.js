@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { join } = require('path')
 const { createServer } = require('http')
 const socketio = require('socket.io')
@@ -8,6 +9,8 @@ const games = require('./app/games')
 const app = express();
 const server = createServer(app)
 const io = socketio(server)
+
+const PORT = 3333 || process.env.PORT;
 
 const createPlayerData = ({ alias, ...playerData }, currentId) => (
   playerData.id === currentId 
@@ -128,8 +131,6 @@ io.on('connection', socket => {
     sendUpdateToPlayers(players.getPlayers(gameId), games.getGames(gameId))
   })
 })
-
-const PORT = 3333 || process.env.PORT;
 
 app.use(express.static(join(__dirname, 'public')));
 
