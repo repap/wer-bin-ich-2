@@ -32,17 +32,37 @@ const sendUpdateToPlayers = (players, game, event = 'updateGame') => {
   });
 }
 
-const setRequestAlias = (players) => players.forEach(player => {
+const setInitialState = players => players.forEach(p => {
+  p.requestAlias = null
+  p.aliasIsRequested = null
+  p.isRestartRequested = null
+  p.isReady = null
+  p.alias = null
+})
+
+const setRequestAlias = (players, player) => {
   const playersWithoutAlias = players
-    .filter(p => !p.aliasIsRequested && p.id !== player.id)
+    .filter(p => !p.requestAlias && p.id !== player.id && !p.aliasIsRequested)
+  
   const randomIndex = Math.floor((playersWithoutAlias.length - 1) * Math.random())
-  const playerToRequestAlias = playersWithoutAlias[randomIndex]
+  const playerToRequestAlias = !playersWithoutAlias.length
+    ? players.find(p => !p.aliasIsRequested)
+    : playersWithoutAlias[randomIndex]
 
   playerToRequestAlias.aliasIsRequested = true;
   player.requestAlias = playerToRequestAlias.id
-})
 
-const areAllPlayerReady = players => !players.find(p => !p.isReady)
+  if (players.find(p => !p.requestAlias)) {
+    setRequestAlias(players, playerToRequestAlias)
+  }
+}
+
+
+
+const areAllPlayersReady = players => !players.find(p => !p.isReady)
+const areAllPlayersRequestedRestart = players => !players
+.filter(p => p.isReady)
+.find(p => !p.isRestartRequested)
 
 io.on('connection', socket => {
   socket.on('joinGame', ({ gameId }) => {
@@ -78,21 +98,29 @@ io.on('connection', socket => {
     const player = getCurrentPlayer(players.getPlayers(gameId), id)
     player.isReady = isReady
     // check if all players are ready
-    if (areAllPlayerReady(players.getPlayers(gameId))) {
+    if (areAllPlayersReady(players.getPlayers(gameId))) {
       // send gameState -> awaitRunning
       // create Timeout 5 second
         // create new gamesState incl. gameState -> running & setAliasFor
-      setRequestAlias(players.getPlayers(gameId))
+      setRequestAlias(players.getPlayers(gameId), player)
       games.getGames(gameId).state = games.GAME_STATES.RUNNING
         // send createAlias event
       sendUpdateToPlayers(players.getPlayers(gameId), games.getGames(gameId), 'createAlias')
     }
   })
 
-  socket.on('restart', data => {
+  socket.on('restart', ({ gameId, id, isRestartRequested }) => {
     // set player to restart
+    const player = getCurrentPlayer(players.getPlayers(gameId), id)
+    player.isRestartRequested = isRestartRequested
     // check if all players are ready
+    if (areAllPlayersRequestedRestart(players.getPlayers(gameId))){
       // send gameState -> preperation
+      setInitialState(players.getPlayers(gameId))
+      games.getGames(gameId).state = games.GAME_STATES.PREPERATION
+
+      sendUpdateToPlayers(players.getPlayers(gameId), games.getGames(gameId))
+    }
   })
 
   socket.on('disconnect', () => {
