@@ -5,33 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wer Bin Ich?!?</title>
     <link rel="stylesheet" type="text/css" href="/css/game.css" media="screen" />
+    <script src="https://kit.fontawesome.com/e5b1470f41.js" crossorigin="anonymous"></script>
 
   </head>
   <body>
     <header>
       <h1>Wer Bin Ich?!?</h1>
     </header>
+    <div id="setReadyToPlay" class="hidden setButton">
+      <div class="checker">
+        <i class="fas fa-circle"></i> Ich bin bereit
+      </div>
+      <input type="checkbox" class="hidden" />
+    </div>
+    <div id="setRestartGame" class="hidden setButton">
+      <div>
+        <div class="checker">
+          <i class="fas fa-circle"></i> Neue Runde
+        </div>
+        <input type="checkbox" class="hidden" />
+      </div>
+    </div>
     <div id="copyLink"></div>
     <div id="playerlist" class="playerlist"></div>
-    <div id="setReadyToPlay" class="hidden">
-      <input type="checkbox" /> Ich bin bereit
-    </div>
-    <div id="setRestartGame" class="hidden">
-      <input type="checkbox" /> Neue Runde
-    </div>
     <div id="spectatorlist" class="playerlist hidden"></div>
 
     <div id="setNameModal" class="hidden modal">
       <div class="content">
         <h2>Wie heißt du?</h2>
-        <input type="text" id="setNameInput">
+        <div>
+          <input type="text" id="setNameInput">
+        </div>
         <button class="send">Speichern</button>
       </div>
     </div>
     <div id="setAliasModal" class="hidden modal">
       <div class="content">
         <h2>Wie soll ... heißen?</h2>
-        <input type="text" id="setAliasInput">
+        <div>
+          <input type="text" id="setAliasInput">
+        </div>
         <button class="send">Speichern</button>
       </div>
     </div>

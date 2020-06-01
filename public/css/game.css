@@ -1,9 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  color: #3b256f;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bangers', cursive;
+  letter-spacing: .1rem;
+  text-shadow: 1px 2px 1px rgba(4,239,152,0.2)
+}
+
 body {
   text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .modal {
@@ -23,6 +44,14 @@ body {
   min-height: 250px;
   max-height: 450px;
   margin: 50px auto 20px;
+  padding: 1rem 1rem 2rem;
+}
+
+header {
+  padding: 1rem;
+  background: #3b256f;
+  color: #04ef98;
+  text-shadow: 2px 5px 2px rgba(50,0,0,0.6)
 }
 
 .playerlist {
@@ -35,8 +64,70 @@ body {
   flex: 1;
   align-items: center;
   text-align: left;
+  margin-bottom: 1rem;
 }
 .playerlist img {
-  border-radius: 30%;
-  padding: 0 1rem;
+  border-radius: .5rem;
+  margin-right:1rem;
+  box-shadow: 0 2px 3px rgba(59,37,11,0.5);
 }
+
+.playerlist .player {
+  margin-bottom: .3rem;
+}
+
+.playerlist .alias {
+  background-color: #3b256f;
+  padding: .3rem;
+  color: white;
+  letter-spacing: .2rem;
+  font-family: 'Bangers', cursive;
+}
+
+.setButton {
+  display: inline-block;
+}
+
+button, .setButton > div {
+  font-family: 'Bangers', cursive;
+  padding: 1rem;
+  margin: 1rem auto;
+  background: #04ef98;
+  color: #3b256f;
+  cursor: pointer;
+  letter-spacing: .1rem;
+  border-radius: .5rem;
+  border: solid 1px #07c7c4;
+  box-shadow: 0 3px 6px rgba(59,37,11,.3);
+  font-size: 1rem;
+  min-width: 250px;
+}
+
+input[type=text] {
+  border: solid 1px #07c7c4;
+  box-shadow: 0 3px 6px rgba(59,37,11,.3);
+  font-size: 1rem;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  padding: 1rem;
+  border-radius: .5rem;
+}
+
+input[type=text]:focus {
+  border-color: #04ef98;
+}
+
+button, input[type=text] {
+  min-width: 250px;
+  display: inline-block;
+}
+
+
+button:hover {
+  background: #09f39d;
+}
+
+.checker i {
+  margin-right: 1rem;
+}
+

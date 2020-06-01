@@ -51,7 +51,7 @@ socket.on('createAlias', ({ requestAlias, players }) => {
 })
 
 const resetElementByid = id => {
-  document.querySelector(`#${id} input`).checked = false;
+  document.querySelector(`#${id} input[type=checkbox]`).checked = false;
   hideElementById(id)
 }
 
@@ -61,6 +61,10 @@ const hideElementById = id => document.getElementById(id)
 const showElementById = id => document.getElementById(id)
   .classList.remove('hidden')
 
+const createAliasLabel = alias => `
+  <span class="alias">${alias}</span>
+`
+
 const updateList = (players, id, header) => {
   const list = document.getElementById(id)
   list.innerHTML = `<h2>${header}</h2>`
@@ -68,12 +72,12 @@ const updateList = (players, id, header) => {
   players.forEach(p => {
     const playerElement = document.createElement('div')
     playerElement.innerHTML = `
+      <img src="https://api.adorable.io/avatars/60/${p.id}@adorable.png">
       <div>
-        <img src="https://api.adorable.io/avatars/40/${p.id}@adorable.png">
-      </div>
-      <div>
-        ${p.name || 'unbekannter Spieler'} <br />
-        ${p.alias ? 'aka ' + p.alias : ''}
+        <div class="player">
+          ${p.name || 'unbekannter Spieler'}
+        </div>
+        ${p.alias ? createAliasLabel(p.alias): ''}
       </div>
     `
     list.append(playerElement)
@@ -131,7 +135,18 @@ const setName = () => {
 
 const sendSetReady = () => {
   const checkbox = document.querySelector('#setReadyToPlay input')
+  const checkedChecker = document.querySelector('#setReadyToPlay i')
+
   checkbox.checked = !checkbox.checked
+
+  if (checkbox.checked) {
+    checkedChecker.classList.add('fa-check-circle')
+    checkedChecker.classList.remove('fa-circle')
+  } else {
+    checkedChecker.classList.remove('fa-check-circle')
+    checkedChecker.classList.add('fa-circle')
+  }
+
   socket.emit('setReady', {
     isReady: checkbox.checked,
     id: state.id,
