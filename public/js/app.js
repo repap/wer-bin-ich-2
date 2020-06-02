@@ -19,21 +19,26 @@ socket.on('disconnect', () => {
   }
 })
 
+socket.on('init', () => {
+  
+})
+
 socket.on('updateGame', ({ id, gameId, players, gameState }) => {
   state.id = id
   state.gameId = gameId
+  
   hideElementById('spectatorlist')
   if (gameState === 'running') {
     const spectators = players.filter(p => !p.isReady)
-    updateList(players.filter(p => p.isReady), 'playerlist', 'Mitspieler')
+    updateList(gameState, players.filter(p => p.isReady), 'playerlist', 'Mitspieler')
     
     if (spectators.length) {
       showElementById('spectatorlist')
-      updateList(spectators, 'spectatorlist', 'Zuschauer')
+      updateList(gameState, spectators, 'spectatorlist', 'Zuschauer')
     }
   }
   if (gameState === 'preperation') {
-    updateList(players, 'playerlist', 'Mitspieler')
+    updateList(gameState, players, 'playerlist', 'Mitspieler')
     resetElementByid('setRestartGame')
     setReady(id, gameId)
   }
@@ -52,32 +57,51 @@ socket.on('createAlias', ({ requestAlias, players }) => {
 
 const resetElementByid = id => {
   document.querySelector(`#${id} input[type=checkbox]`).checked = false;
+  document.getElementById(id).classList.add('not-checked')
   hideElementById(id)
 }
 
-const hideElementById = id => document.getElementById(id)
-  .classList.add('hidden')
+const hideElementById = id => document.getElementById(id).classList.add('hidden')
 
 const showElementById = id => document.getElementById(id)
   .classList.remove('hidden')
 
-const createAliasLabel = alias => `
-  <span class="alias">${alias}</span>
-`
+const createAliasLabel = alias => alias
+  ? `<span class="alias">${alias}</span>`
+  : ''
 
-const updateList = (players, id, header) => {
+const createIsReadyLabel = isReady => isReady
+  ? `<span class="isReady status">kann los gehen</span>`
+  : ''
+
+const createIsRestartRequestedLabel = isRestartRequested => isRestartRequested
+  ? `<span class="isRestartRequested status">bereit für noch ne Runde</span>`
+  : ''
+
+const createPlayerStatusLabel = (gameState, { isReady, isRestartRequested}) => {
+  switch (gameState) {
+    case 'preperation': return createIsReadyLabel(isReady)
+    case 'running': return createIsRestartRequestedLabel(isRestartRequested)
+    default: return ''
+  }
+}
+
+const updateList = (gameState, players, id, header) => {
   const list = document.getElementById(id)
   list.innerHTML = `<h2>${header}</h2>`
 
   players.forEach(p => {
     const playerElement = document.createElement('div')
     playerElement.innerHTML = `
-      <img src="https://api.adorable.io/avatars/60/${p.id}@adorable.png">
+      <img src="https://api.adorable.io/avatars/55/${p.id}@adorable.png">
       <div>
-        <div class="player">
-          ${p.name || 'unbekannter Spieler'}
+        <div>
+          <div class="player">
+            ${p.name || 'unbekannter Spieler'}
+          </div>
+          ${createAliasLabel(p.alias)}
         </div>
-        ${p.alias ? createAliasLabel(p.alias): ''}
+        ${createPlayerStatusLabel(gameState, p)}
       </div>
     `
     list.append(playerElement)
@@ -135,17 +159,13 @@ const setName = () => {
 
 const sendSetReady = () => {
   const checkbox = document.querySelector('#setReadyToPlay input')
-  const checkedChecker = document.querySelector('#setReadyToPlay i')
+  const checkedChecker = document.querySelector('#setReadyToPlay')
 
   checkbox.checked = !checkbox.checked
 
-  if (checkbox.checked) {
-    checkedChecker.classList.add('fa-check-circle')
-    checkedChecker.classList.remove('fa-circle')
-  } else {
-    checkedChecker.classList.remove('fa-check-circle')
-    checkedChecker.classList.add('fa-circle')
-  }
+  !checkbox.checked 
+    ? checkedChecker.classList.add('not-checked') 
+    : checkedChecker.classList.remove('not-checked')
 
   socket.emit('setReady', {
     isReady: checkbox.checked,
@@ -167,7 +187,14 @@ const setReady = () => {
 
 const sendSetRestartGame = () => {
   const checkbox = document.querySelector('#setRestartGame input')
+  const checkedChecker = document.querySelector('#setRestartGame')
+  
   checkbox.checked = !checkbox.checked
+
+  !checkbox.checked
+    ? checkedChecker.classList.add('not-checked')
+    : checkedChecker.classList.remove('not-checked')
+
   socket.emit('restart', {
     isRestartRequested: checkbox.checked,
     id: state.id,

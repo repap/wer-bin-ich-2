@@ -51,12 +51,12 @@ header {
   padding: 1rem;
   background: #3b256f;
   color: #04ef98;
-  text-shadow: 2px 5px 2px rgba(50,0,0,0.6)
+  text-shadow: 2px 5px 2px rgba(50,0,0,0.6);
 }
 
 .playerlist {
   margin: 0 auto;
-  width: 15rem
+  width: 22rem
 }
 
 .playerlist > div {
@@ -66,19 +66,34 @@ header {
   text-align: left;
   margin-bottom: 1rem;
 }
-.playerlist img {
-  border-radius: .5rem;
-  margin-right:1rem;
-  box-shadow: 0 2px 3px rgba(59,37,11,0.5);
+
+.playerlist > div > * {
+  margin-right: 1rem;
+}
+
+.playerlist > div > *:last-child {
+  margin-right: 0;
 }
 
 .playerlist .player {
-  margin-bottom: .3rem;
+  padding-bottom: .3rem;
+}
+
+.playerlist img {
+  border-radius: .5rem;
+  box-shadow: 0 2px 3px rgba(59,37,11,0.5);
+}
+
+.playerlist .status {
+  font-size: .7rem;
+  background: #04ef98;
+  padding: .1rem 0.2rem;
 }
 
 .playerlist .alias {
   background-color: #3b256f;
-  padding: .3rem;
+  padding: .4rem;
+  font-size: 1.4rem;
   color: white;
   letter-spacing: .2rem;
   font-family: 'Bangers', cursive;
@@ -101,6 +116,13 @@ button, .setButton > div {
   box-shadow: 0 3px 6px rgba(59,37,11,.3);
   font-size: 1rem;
   min-width: 250px;
+}
+
+.setButton.not-checked > div {
+  background: transparent;
+  color: #3b256f;
+  border: solid 1px #3b256f;
+  box-shadow: none;
 }
 
 input[type=text] {

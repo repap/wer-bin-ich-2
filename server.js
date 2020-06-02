@@ -98,6 +98,8 @@ io.on('connection', socket => {
     // set player ready
     const player = getCurrentPlayer(players.getPlayers(gameId), id)
     player.isReady = isReady
+
+    sendUpdateToPlayers(players.getPlayers(gameId), games.getGames(gameId))
     // check if all players are ready
     if (areAllPlayersReady(players.getPlayers(gameId))) {
       // send gameState -> awaitRunning
@@ -107,13 +109,14 @@ io.on('connection', socket => {
       games.getGames(gameId).state = games.GAME_STATES.RUNNING
         // send createAlias event
       sendUpdateToPlayers(players.getPlayers(gameId), games.getGames(gameId), 'createAlias')
-    }
+      }
   })
 
   socket.on('restart', ({ gameId, id, isRestartRequested }) => {
     // set player to restart
     const player = getCurrentPlayer(players.getPlayers(gameId), id)
     player.isRestartRequested = isRestartRequested
+    sendUpdateToPlayers(players.getPlayers(gameId), games.getGames(gameId))
     // check if all players are ready
     if (areAllPlayersRequestedRestart(players.getPlayers(gameId))){
       // send gameState -> preperation
