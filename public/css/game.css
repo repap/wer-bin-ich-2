@@ -154,5 +154,9 @@ button:hover {
 }
 
 #copyLink {
-  margin-top: 4rem;
+  margin-top: 6rem;
+}
+
+#copyLink p {
+  margin: 0;
 }
