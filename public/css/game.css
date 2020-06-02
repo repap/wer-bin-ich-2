@@ -141,15 +141,18 @@ input[type=text]:focus {
 
 button, input[type=text] {
   min-width: 250px;
+  max-width: 100%;
   display: inline-block;
 }
 
+button.small {
+  min-width: auto;
+}
 
 button:hover {
   background: #09f39d;
 }
 
-.checker i {
-  margin-right: 1rem;
+#copyLink {
+  margin-top: 4rem;
 }
-

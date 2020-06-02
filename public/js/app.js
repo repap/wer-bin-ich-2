@@ -7,6 +7,24 @@ const state = {
 const socket = io()
 const gameId = window.location.href.split('/').pop()
 
+const selectInput = () => {
+  const range = document.createRange();
+  range.selectNode(document.querySelector('#copyLink input'));
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+}
+
+document.querySelector('#copyLink input').value = window.location.href
+document.querySelector('#copyLink input')
+  .addEventListener('click', selectInput)
+
+document.querySelector('#copyLink button')
+  .addEventListener("click", () => {
+    selectInput()
+    document.execCommand("copy")
+    window.getSelection().removeAllRanges();
+  });
+
 socket.on('connect', () => {
   if (socket.connected) {
     socket.emit('joinGame', { gameId })
