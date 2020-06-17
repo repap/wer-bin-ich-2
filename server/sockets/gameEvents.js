@@ -1,11 +1,11 @@
-const GameService = require('../services/gameService')
+const { gameService } = require('../services')
 
 module.exports = socket => {
-  const gameService = new GameService(socket)
+  const service = gameService(socket)
 
-  socket.on('game/join', gameService.join)
-  socket.on('game/leave', gameService.leave)
-  socket.on('game/restart', gameService.restart)
-  socket.on('game/ready', gameService.ready)
-  socket.on('game/create', gameService.create)
+  socket.on('game/join', service.join)
+  socket.on('game/leave', service.leave)
+  socket.on('game/restart', service.restart)
+  socket.on('game/ready', service.ready)
+  socket.on('game/create', service.create)
 }

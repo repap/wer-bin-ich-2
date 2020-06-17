@@ -1,16 +1,21 @@
-class UserModel {
-  constructor (socket) {
-    this.id = socket.id
-    this.name = null
-    this.alias = null
-    this.state = null // PREPARING_NAME, WAITING, PREPARING_ALIAS, PLAYING
-    this.role = null // PLAYER, SPECTATOR
+module.exports = socket => {
+  const user = {
+    id: socket.id,
+    name: null,
+    alias: null,
+    state: null, // PREPARING_NAME, WAITING, PREPARING_ALIAS, PLAYING
+    role: null, // PLAYER, SPECTATOR
   }
 
-  updateName (name) { this.name = name }
-  updateAlias (alias) { this.alias = alias }
-  updateState (state) { this.state = state }
-  updateRole (role) { this.role = role }
+  return {
+    getId: () => user.id,
+    setName: value => user.name = value,
+    getName: () => user.name,
+    setAlias: value => user.alias = value,
+    getAlias: () => user.alias,
+    setState: value => user.state = value,
+    getState: () => user.state,
+    setRole: value => user.role = value,
+    getRole: () => user.role,
+  }
 }
-
-module.exports = UserModel

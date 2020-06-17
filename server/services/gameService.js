@@ -1,9 +1,21 @@
-// game/join
-// game/leave
-// game/restart
-// game/ready
-// game/create
+const GameModel = require('../models/gameModel')
 
-class GameService {}
-
-module.exports = GameService
+module.exports = ({ games, users }) => socket => {
+  return {
+    join: ({ gameId, userId }) => {
+      games.get(gameId).addPlayer(userId)
+    },
+    leave: ({ gameId, userId }) => {
+      games.get(gameId).removePlayer(userId)
+    },
+    restart: ({ gameId }) => {
+      games.get(gameId).reset()
+    },
+    ready: ({ gameId }) => {
+      games.get(gameId).setState('IN_GAME')
+    },
+    create: () => {
+      games.add(new GameModel())
+    },
+  }
+}

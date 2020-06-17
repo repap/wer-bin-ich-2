@@ -1,6 +1,9 @@
-// user/setName
-// user/setAlias
+const createUserModel = require('../models/userModel')
 
-class UserService { }
-
-module.exports = UserService
+module.exports = ({ users }) => socket => {
+  return {
+    setName: ({ id, name }) => users.get(id).setName(name),
+    setAlias: ({ id, alias }) => users.get(id).setAlias(alias),
+    create: () => users.add(createUserModel(socket)),
+  }
+}

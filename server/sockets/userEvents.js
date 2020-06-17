@@ -1,8 +1,9 @@
-const UserService = require('../services/userService')
+const { userService } = require('../services/userService')
 
 module.exports = socket => {
-  const userService = new UserService(socket)
+  const service = new userService(socket)
 
-  socket.on('user/setName', userService.setName)
-  socket.on('user/setAlias', userService.setAlias)
+  socket.on('user/setName', service.setName)
+  socket.on('user/setAlias', service.setAlias)
+  socket.on('user/create', service.create)
 }
