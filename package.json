@@ -14,8 +14,10 @@
     "react-redux": "^7.1.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
+    "react-socket-io-hooks": "^1.1.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
+    "use-socket.io-client": "^1.1.0",
     "uuid": "^8.1.0"
   },
   "scripts": {

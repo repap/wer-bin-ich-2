@@ -1,16 +1,26 @@
-import React from 'react'
-import { useSocket } from '../hooks/useSocket'
+import React, { useEffect } from 'react'
+import { useEmitEvent, useSocketSelector } from 'react-socket-io-hooks';
+import { withRouter } from 'react-router-dom';
 
-export const Home = () => {
+const Home = ({ history }) => {
+  const gameId = useSocketSelector(state => state?.game?.gameId);
+  const createGame = useEmitEvent('createGame')
 
-  const {response} = useSocket()
+  useEffect(() => {
+    if (gameId) {
+      history.push(`/game/${gameId}`)
+    }
+  }, [history, gameId])
 
   return (
     <div>
       Home
       <p>
-        socket: {response}
+        socket: {gameId}
       </p>
+      <button onClick={() => createGame()}>send what</button>
     </div>
   )
 }
+
+export default withRouter(Home)

@@ -5,8 +5,11 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 io.on('connect', socket => {
-  console.log('connection')
-  socket.emit('update', { msg: 'Hello World :)' })
+  console.log('connection', socket.id)
+  socket.emit('update', 'Hello World :)')
+  socket.on('createGame', () => {
+    socket.emit('gameCreated', { game: { gameId: '123456' }})
+  })
 })
 
 const PORT = process.env.PORT || 4000;
