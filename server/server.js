@@ -1,11 +1,13 @@
 const { join } = require('path')
-const { createServer } = require('http')
-const express = require('express');
-const Socket = require('./services')
-
+const express = require('express')
 const app = express();
-const server = createServer(app)
-Socket.init(server)
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+io.on('connect', socket => {
+  console.log('connection')
+  socket.emit('update', { msg: 'Hello World :)' })
+})
 
 const PORT = process.env.PORT || 4000;
 
